@@ -23,6 +23,17 @@ function PlayState:init()
 
     -- keep track of whether the game is paused
     self.paused = false
+
+    -- create powerup (moving is false by default)
+    powerup = Powerup()
+
+    -- timer
+    timer = {
+        duration = 3,
+        -- duration = math.random(5, 6), -- Time in seconds
+        elapsed = 0,
+        active = true
+    }
 end
 
 function PlayState:update(dt)
@@ -159,6 +170,24 @@ function PlayState:update(dt)
     if love.keyboard.wasPressed('escape') then
         love.event.quit()
     end
+
+    -- timer logic
+    if timer.active then
+        timer.elapsed = timer.elapsed + dt
+        if timer.elapsed >= timer.duration then
+            timer.active = false
+            powerup.dy = 50
+        end
+    end
+
+    -- player collects powerup
+    if powerup:collides(player) then
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Successful', 0, VIRTUAL_HEIGHT - 18,
+        VIRTUAL_WIDTH, 'center')
+        gSounds['select']:play()
+    end
+    powerup:update(dt)
 end
 
 function PlayState:render()
@@ -183,6 +212,8 @@ function PlayState:render()
         love.graphics.setFont(largeFont)
         love.graphics.printf("PAUSED", 0, VIRTUAL_HEIGHT / 2 - 16, VIRTUAL_WIDTH, 'center')
     end
+    
+    powerup:render() -- rendering at the end so that it's rendered on top of everything else
 end
 
 function PlayState:checkVictory()
