@@ -17,7 +17,7 @@
 ServeState = Class{__includes = BaseState}
 
 function ServeState:init()
-    player.x = VIRTUAL_WIDTH / 2 - 32
+    player.x = VIRTUAL_WIDTH / 2 - player.width / 2
     player.y = VIRTUAL_HEIGHT - 24
 end
 
@@ -31,8 +31,8 @@ function ServeState:update(dt)
 
     -- have the ball track the player
     player:update(dt)
-    ball.x = player.x + (player.width / 2) - 4
-    ball.y = player.y - 8
+    ball.x = player.x + (player.width / 2) - ball.width / 2
+    ball.y = player.y - ball.width
 
     if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
         gStateMachine:change('play')
