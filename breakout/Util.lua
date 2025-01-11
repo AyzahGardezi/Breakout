@@ -128,3 +128,12 @@ function GenerateQuadsBalls(atlas)
 
     return quads
 end
+
+function GeneratePowerup(atlas)
+    local x = 144
+    local y  = 192
+
+    local quad = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
+
+    return quad
+end

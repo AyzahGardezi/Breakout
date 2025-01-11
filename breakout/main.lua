@@ -50,6 +50,8 @@ require 'Ball'
 -- score points
 require 'Brick'
 
+require 'Powerup'
+
 -- a basic StateMachine class which will allow us to transition to and from
 -- game states smoothly and avoid monolithic code in one file
 require 'StateMachine'
@@ -57,15 +59,15 @@ require 'StateMachine'
 -- each of the individual states our game can be in at once; each state has
 -- its own update and render methods that can be called by our state machine
 -- each frame, to avoid bulky code in main.lua
-require 'BaseState'
-require 'StartState'
-require 'PaddleSelectState'
-require 'ServeState'
-require 'PlayState'
-require 'VictoryState'
-require 'GameOverState'
-require 'HighScoreState'
-require 'EnterHighScoreState'
+require 'states/BaseState'
+require 'states/StartState'
+require 'states/PaddleSelectState'
+require 'states/ServeState'
+require 'states/PlayState'
+require 'states/VictoryState'
+require 'states/GameOverState'
+require 'states/HighScoreState'
+require 'states/EnterHighScoreState'
 
 -- the class we'll use to generate the map for each level
 require 'LevelMaker'
@@ -89,6 +91,8 @@ PADDLE_SPEED = 200
     game objects, variables, etc. and prepare the game world.
 ]]
 function love.load()
+    love.graphics.setDepthMode() -- Resets to the default: no depth testing
+
     -- set love's default filter to "nearest-neighbor", which essentially
     -- means there will be no filtering of pixels (blurriness), which is
     -- important for a nice crisp, 2D look
@@ -119,7 +123,8 @@ function love.load()
         ['bricks'] = GenerateQuadsBricks(gTextures['main']),
         ['paddles'] = GenerateQuadsPaddles(gTextures['main']),
         ['balls'] = GenerateQuadsBalls(gTextures['main']),
-        ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9)
+        ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9),
+        ['powerup'] = GeneratePowerup(gTextures['main']),
     }
     
     -- initialize our virtual resolution, which will be rendered within our
@@ -199,13 +204,15 @@ function love.load()
     gStateMachine:change('start')
 
     -- play our music outside of all states and set it to looping
-    gSounds['music']:play()
-    gSounds['music']:setLooping(true)
+    -- gSounds['music']:play()
+    -- gSounds['music']:setLooping(true)
 
     -- a table we'll use to keep track of which keys have been pressed this
     -- frame, to get around the fact that LÖVE's default callback won't let us
     -- test for input from within other functions
     love.keyboard.keysPressed = {}
+    print("Hello, World!")
+
 end
 
 --[[
