@@ -26,13 +26,15 @@ function PlayState:init()
 
     -- create powerup (moving is false by default)
     powerup = Powerup()
-    powerup.ballsSkin = ((ball.skin + 1) % 7)
+    powerup.ballsSkin = ((ball.skin % 7) + 1)
     -- timer
     timer = {
         duration = math.random(5, 20), -- Time in seconds
         elapsed = 0,
         active = true
     }
+
+    previousScore = 500
 end
 
 function PlayState:update(dt)
@@ -84,6 +86,10 @@ function PlayState:update(dt)
     if ball.y >= VIRTUAL_HEIGHT then
         health = health - 1
         gSounds['hurt']:play()
+        -- make paddle size smaller
+        if player.size > 1 then
+            player.size = player.size - 1
+        end
 
         if health == 0 then
             gStateMachine:change('game-over')
@@ -144,6 +150,13 @@ function brickCollision(_ball, dt)
                 gSounds['recover']:play()
             end
 
+            if score > 2 * previousScore then
+                if player.size < 4 then
+                    player.size = player.size + 1
+                end
+                previousScore = score
+            end
+
             if PlayState:checkVictory() then
                 gStateMachine:change('victory')
             end
@@ -192,7 +205,7 @@ function paddleCollision(_ball, dt)
     -- bounce the ball back up if we collide with the paddle
     if _ball:collides(player) then
         -- raise _ball above paddle in case it goes below it, then reverse dy
-        _ball.y = player.y - 8
+        _ball.y = player.y - ball.height
         _ball.dy = -_ball.dy
 
         --
