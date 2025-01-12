@@ -5,7 +5,7 @@ certain time has elapsed.
 
 Powerup = Class{}
 
-function Powerup:init()
+function Powerup:init(powerupType)
     self.width = 16
     self.height = 16
     self.x = math.random(0, VIRTUAL_WIDTH - self.width)
@@ -16,6 +16,7 @@ function Powerup:init()
     self.balls = {}
     self.playerContainer = nil -- might not need this
     self.ballsSkin = nil
+    self.type = powerupType
 end
 
 function Powerup:collides(target)
@@ -32,11 +33,14 @@ function Powerup:collides(target)
         gSounds['confirm']:play()
         self.soundPlayed = true
     end
-    -- add two balls for powerup
-    for i = 1, 2 do
-        self.balls[i] = Ball(self.ballsSkin)
-        self.balls[i]:reset()
+    if self.type == 1 then
+        for i = 1, 2 do
+            self.balls[i] = Ball(self.ballsSkin)
+            self.balls[i]:reset()
+        end
     end
+
+    self.collected = true -- will not be rendered when collected
 
     return true
 end
@@ -47,6 +51,6 @@ end
 
 function Powerup:render()
     if (not self.collected) then
-        love.graphics.draw(gTextures['main'], gFrames['powerup'], self.x, self.y)
+        love.graphics.draw(gTextures['main'], gFrames['powerup'][self.type], self.x, self.y)
     end
 end

@@ -58,7 +58,9 @@ end
     Then extract the first 21 as the first 21 are the bricks
 ]]
 function GenerateQuadsBricks(atlas)
-    return table.slice(GenerateQuads(atlas, 32, 16), 1, 21)
+    bricksTable = table.slice(GenerateQuads(atlas, 32, 16), 1, 21)
+    bricksTable[#bricksTable + 1] = love.graphics.newQuad(160, 48, 32, 16, atlas:getDimensions())
+    return bricksTable
 end
 
 --[[
@@ -130,10 +132,12 @@ function GenerateQuadsBalls(atlas)
 end
 
 function GeneratePowerup(atlas)
-    local x = 144
-    local y  = 192
+    local x = 128
+    local y = 192
 
-    local quad = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
+    local powerupQuads = {}
+    powerupQuads[1] = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
+    powerupQuads[2] = love.graphics.newQuad(x + 16, y, 16, 16, atlas:getDimensions())
 
-    return quad
+    return powerupQuads
 end

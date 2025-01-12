@@ -23,6 +23,9 @@ ALTERNATE = 2       -- alternate colors
 SKIP = 3            -- skip every other block
 NONE = 4            -- no blocks this row
 
+lockBrickExists = true
+lockBrick = true
+
 LevelMaker = Class{}
 
 function LevelMaker:init()
@@ -110,7 +113,25 @@ function LevelMaker:createMap(level)
             -- Lua's version of the 'continue' statement
             ::continue::
         end
-    end 
+    end
+
+    if math.random(3) == 1 then
+        lockBrick = true
+    else
+        lockBrick = false
+    end
+
+    if lockBrick and #bricks > 0 then
+        lockBrickNumber = math.random(#bricks)
+        bricks[lockBrickNumber].color = 7
+        -- lockBrick has no tier but the lock is no. 22 in the table and 
+        -- since our renderer uses [1 + ((self.color - 1) * 4) + self.tier] logic, 
+        -- and color is 7, it will be 25 + tier, so -3 is needed for 22
+        bricks[lockBrickNumber].tier = -3
+        bricks[lockBrickNumber].isLocked = true
+        lockBrickAdded = true
+        lockBrickHolder = bricks[lockBrickNumber]
+    end
 
     -- in the event we didn't generate any bricks, try again
     if #bricks == 0 then

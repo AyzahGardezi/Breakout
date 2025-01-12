@@ -25,16 +25,31 @@ function PlayState:init()
     self.paused = false
 
     -- create powerup (moving is false by default)
-    powerup = Powerup()
+    powerup = Powerup(1)
     powerup.ballsSkin = ((ball.skin % 7) + 1)
+
     -- timer
-    timer = {
+    powerupTimer = {
+        duration = math.random(5, 20), -- Time in seconds
+        elapsed = 0,
+        active = true
+    }
+
+    lockPowerupTimer = {
         duration = math.random(5, 20), -- Time in seconds
         elapsed = 0,
         active = true
     }
 
     previousScore = 500
+
+    lockPowerup = Powerup(2)
+
+    if lockBrick then
+        lockPowerupTimer.active = true
+    else
+        lockPowerupTimer.active = false
+    end
 end
 
 function PlayState:update(dt)
@@ -108,17 +123,24 @@ function PlayState:update(dt)
     end
 
     -- timer logic
-    if timer.active then
-        timer.elapsed = timer.elapsed + dt
-        if timer.elapsed >= timer.duration then
-            timer.active = false
+    if powerupTimer.active then
+        powerupTimer.elapsed = powerupTimer.elapsed + dt
+        if powerupTimer.elapsed >= powerupTimer.duration then
+            powerupTimer.active = false
             powerup.dy = 50
+        end
+    end
+
+    if lockPowerupTimer.active then
+        lockPowerupTimer.elapsed = lockPowerupTimer.elapsed + dt
+        if lockPowerupTimer.elapsed >= lockPowerupTimer.duration then
+            lockPowerupTimer.active = false
+            lockPowerup.dy = 50
         end
     end
 
     -- player collects powerup
     if powerup:collides(player) then
-        powerup.collected = true    -- will not be rendered when collected
         for i = 1, 2 do
             powerup.balls[i].dx = math.random(-200, 200)
             powerup.balls[i].dy = math.random(-50, -60) - math.min(100, level * 5)
@@ -130,12 +152,26 @@ function PlayState:update(dt)
             powerup.balls[i]:update(dt)
         end
     end
+
+    if lockPowerup:collides(player) then
+        lockBrickHolder.breakable = true
+    end
+
+    if lockBrick then
+        lockPowerup:update(dt)
+    end
 end
 
 function brickCollision(_ball, dt)
     for k, brick in pairs(bricks) do
         if brick.inPlay and _ball:collides(brick) then
-            score = score + (brick.tier * 200 + brick.color * 25)
+            if not brick.isLocked then
+                score = score + (brick.tier * 200 + brick.color * 25)
+            else
+                if brick.breakable then
+                    score = score + 500
+                end
+            end
             brick:hit()
 
             -- if we have enough points, recover a point of health
@@ -260,6 +296,11 @@ function PlayState:render()
             powerup.balls[i]:render()
         end
     end
+
+    if lockBrick then
+        lockPowerup:render()
+    end
+
 end
 
 function PlayState:checkVictory()

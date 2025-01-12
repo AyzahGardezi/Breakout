@@ -62,6 +62,8 @@ function Brick:init(x, y)
     
     -- used to determine whether this brick should be rendered
     self.inPlay = true
+    self.isLocked = false -- false for all bricks, changed to true for lock brick
+    self.breakable = false -- for lock brick
 
     -- particle system belonging to the brick, emitted on hit
     self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 64)
@@ -79,6 +81,7 @@ end
     changing its color otherwise.
 ]]
 function Brick:hit()
+    if not self.isLocked then
     -- emit from the proper particle system first, since it depends on color
     self.psystem:setColors(
         paletteColors[self.color].r,
@@ -117,10 +120,34 @@ function Brick:hit()
     if not self.inPlay then
         gSounds['brick-hit-1']:play()
     end
+else
+    if self.breakable then
+        self.psystem:setColors(
+        paletteColors[1].r,
+        paletteColors[1].g,
+        paletteColors[1].b,
+        55 * (2),
+        paletteColors[1].r,
+        paletteColors[1].g,
+        paletteColors[1].b,
+        0
+        )
+        self.psystem:emit(64)
+
+        gSounds['brick-hit-1']:play()
+
+        self.inPlay = false
+        lockBrick = false
+    end
+    end
 end
 
 function Brick:update(dt)
     self.psystem:update(dt)
+
+    if lockPowerup.collected and self.isLocked then
+        self.breakable = true
+    end
 end
 
 function Brick:render()
