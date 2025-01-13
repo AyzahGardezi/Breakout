@@ -298,7 +298,7 @@ end
 function loadHighScores()
     love.filesystem.setIdentity('breakout')
 
-    if not love.filesystem.exists('breakout.lst') then
+    if not love.filesystem.getInfo('breakout.lst') then
         local defaultScores = ''
         for i = 10, 1, -1 do
             defaultScores = defaultScores .. 'CTO\n'

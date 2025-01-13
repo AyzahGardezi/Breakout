@@ -73,7 +73,7 @@ function Brick:init(x, y)
     self.psystem:setSpin(0, 60)
     self.psystem:setSpinVariation(1)
     self.psystem:setTangentialAcceleration(10, 20)
-    self.psystem:setAreaSpread('normal', 10, 10)
+    self.psystem:setEmissionArea('normal', 10, 10)
 end
 
 --[[
