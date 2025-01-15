@@ -63,3 +63,5 @@ Add a locked Brick (located in the sprite sheet) to the level spawning, as well 
 
 
 Refer to my [documentation on Medium](https://ayzah-gardezi.medium.com/gd50s-breakout-project-documentation-my-implementation-0618ee3f3675) for more information about the implementation.
+
+Click [here](https://youtu.be/R0H3F40hOhM) to watch demo.
